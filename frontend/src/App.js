@@ -6,42 +6,54 @@ import { CSVLink } from "react-csv";
 
 class App extends Component {
   state = {
-    items: []
+    characters: [],
+    races: []
   };
 
-  getItems() {
+  getCharacters = () => {
     fetch("http://localhost:3002/characters")
       .then(response => response.json())
-      .then(items => this.setState({ items }))
+      .then(characters => this.setState({ characters }))
+      .catch(err => console.log(err));
+  };
+  async getRaces() {
+    fetch("http://localhost:3002/races")
+      .then(response => response.json())
+      .then(races => localStorage.setItem("races", JSON.stringify(races)))
       .catch(err => console.log(err));
   }
 
   addItemToState = item => {
     this.setState(prevState => ({
-      items: [...prevState.items, item]
+      characters: [...prevState.characters, item]
     }));
   };
 
   updateState = item => {
-    const itemIndex = this.state.items.findIndex(data => data.id === item.id);
+    const itemIndex = this.state.characters.findIndex(
+      data => data.id === item.id
+    );
     const newArray = [
-      // destructure all items from beginning to the indexed item
-      ...this.state.items.slice(0, itemIndex),
+      // destructure all characters from beginning to the indexed item
+      ...this.state.characters.slice(0, itemIndex),
       // add the updated item to the array
       item,
-      // add the rest of the items to the array from the index after the replaced item
-      ...this.state.items.slice(itemIndex + 1)
+      // add the rest of the characters to the array from the index after the replaced item
+      ...this.state.characters.slice(itemIndex + 1)
     ];
-    this.setState({ items: newArray });
+    this.setState({ characters: newArray });
   };
 
   deleteItemFromState = id => {
-    const updatedItems = this.state.items.filter(item => item.id !== id);
-    this.setState({ items: updatedItems });
+    const updatedcharacters = this.state.characters.filter(
+      item => item.id !== id
+    );
+    this.setState({ characters: updatedcharacters });
   };
 
   componentDidMount() {
-    this.getItems();
+    this.getCharacters();
+    this.getRaces();
   }
 
   render() {
@@ -55,7 +67,7 @@ class App extends Component {
         <Row>
           <Col>
             <DataTable
-              items={this.state.items}
+              items={this.state.characters}
               updateState={this.updateState}
               deleteItemFromState={this.deleteItemFromState}
             />
@@ -68,7 +80,7 @@ class App extends Component {
               color="primary"
               style={{ float: "left", marginRight: "10px" }}
               className="btn btn-primary"
-              data={this.state.items}
+              data={this.state.characters}
             >
               Download CSV
             </CSVLink>

@@ -24,13 +24,13 @@ class DataTable extends Component {
   };
 
   render() {
-    console.log(this.props);
     const items = this.props.items.map(item => {
       return (
         <tr key={item.id}>
           <th scope="row">{item.id}</th>
           <td>{item.name}</td>
           <td>{item.level}</td>
+          <td>{item.race_id ? item.race_id : "unset"}</td>
           <td>
             <div style={{ width: "110px" }}>
               <ModalForm
@@ -54,6 +54,7 @@ class DataTable extends Component {
             <th>ID</th>
             <th>Name</th>
             <th>Level</th>
+            <th>Race</th>
           </tr>
         </thead>
         <tbody>{items}</tbody>

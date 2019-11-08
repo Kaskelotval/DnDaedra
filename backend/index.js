@@ -35,7 +35,19 @@ const postLimiter = rateLimit({
 });
 
 const getCharacters = (request, response) => {
+  console.log("getting characters (backend)");
+
   pool.query("SELECT * FROM characters", (error, results) => {
+    if (error) {
+      throw error;
+    }
+    response.status(200).json(results.rows);
+  });
+};
+
+const getRaces = (request, response) => {
+  console.log("getting races (backend)");
+  pool.query("SELECT * FROM races", (error, results) => {
     if (error) {
       throw error;
     }
@@ -53,7 +65,7 @@ const deleteCharacter = (request, response, db) => {
     response.status(200).json(results.status);
   });
 };
-
+app.route("/races").get(getRaces);
 app
   .route("/characters")
   // GET endpoint
@@ -82,26 +94,25 @@ app.post(
       return response.status(422).json({ errors: errors.array() });
     }
 
-    const { name, level } = request.body;
+    const { name, level, race_id } = request.body;
 
     pool.query(
-      "INSERT INTO characters (name, level) VALUES ($1, $2)",
-      [name, level],
+      "INSERT INTO characters (name, level, race_id) VALUES ($1, $2, $3)",
+      [name, level, race_id],
       error => {
         if (error) {
           throw error;
         }
-        response
-          .status(201)
-          .json({
-            item: request.body,
-            status: "success",
-            message: "Character added."
-          });
+        response.status(201).json({
+          item: request.body,
+          status: "success",
+          message: "Character added."
+        });
       }
     );
   }
 );
+
 // Start server
 app.listen(process.env.PORT || 3002, () => {
   console.log(`Server listening on `, process.env.PORT || 3002);
