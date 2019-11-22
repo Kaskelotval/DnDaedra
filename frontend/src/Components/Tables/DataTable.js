@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { Table, Button } from "reactstrap";
 import ModalForm from "../Modals/Modal";
+import { getRaceNameByID } from "../../Shared/lookupFunctions";
+import store from "../../Shared/Store";
 
 class DataTable extends Component {
   deleteItem = id => {
@@ -24,13 +26,14 @@ class DataTable extends Component {
   };
 
   render() {
-    const items = this.props.items.map(item => {
+    console.log(store.getState());
+    const items = store.getState().characters.map(item => {
       return (
         <tr key={item.id}>
           <th scope="row">{item.id}</th>
           <td>{item.name}</td>
           <td>{item.level}</td>
-          <td>{item.race_id ? item.race_id : "unset"}</td>
+          <td>{item.race_id ? getRaceNameByID(item.race_id) : "unset"}</td>
           <td>
             <div style={{ width: "110px" }}>
               <ModalForm
